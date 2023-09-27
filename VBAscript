@@ -1,3 +1,143 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-kll;;;l'';;lkhl;l;i;;;'
+Sub VBAchallenge()
+
+'Setting up my code to be ran on all worksheets
+Dim ws As Worksheet
+ For Each ws In ThisWorkbook.Worksheets
+ 
+ 
+' Creating headers for new tables
+Cells(1, 9).Value = "Ticker"
+Cells(1, 10).Value = "Yearly change"
+Cells(1, 11).Value = "Percent change"
+Cells(1, 12).Value = "Total Stock Volume"
+Cells(1, 16).Value = "Ticker"
+Cells(1, 17).Value = "Value"
+Cells(2, 15).Value = "Greatest % increase"
+Cells(3, 15).Value = "Greatest % decrease"
+Cells(4, 15).Value = "Greatest Total Volume"
+
+
+' Keyboard Shortcut: Ctrl+q
+   Dim Total As Double
+   Dim i As Long
+   Dim j As Integer
+   Dim rowcount As Long
+   Dim ychange As Single
+   Dim pchange As Single
+   Dim Openp As Double
+   Dim Closep As Double
+   
+   
+
+   
+   
+    
+' Setting initial values
+j = 0
+Total = 0
+rowcount = Range("A2").End(xlDown).Row
+Openp = Cells(2, 3).Value
+ 
+'setting up loop
+For i = 2 To rowcount
+
+
+'if ticker changes then print
+If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+
+'conditonal to reset ticker symbol
+Cells(j + 2, 9).Value = Cells(i, 1).Value
+Total = 0
+
+'conditionals to calculate yearly change
+Closep = Cells(i, 6).Value
+ychange = Openp - Closep
+Cells(j + 2, 10).Value = ychange
+j = j + 1
+
+'conditionals to calculate percent change
+If Openp <> 0 Then
+pchange = (ychange / Openp) * 100
+Else
+pchange = 0
+End If
+Cells(j + 1, 11).Value = pchange
+Else
+
+'conditonal to calculate total volume
+If Cells(i + 1, 1).Value = Cells(i, 1).Value Then
+Total = Total + Cells(i, 7).Value
+End If
+Cells(j + 2, 12).Value = Total + Cells(i, 7).Value
+End If
+
+Next i
+
+'Code function for color format
+Dim z As Long
+Dim rowcount2 As Long
+rowcount2 = Range("J2").End(xlDown).Row
+For z = 2 To rowcount2
+If Cells(z, 10).Value >= 0 Then
+Cells(z, 10).Interior.Color = RGB(0, 255, 0)
+Else
+Cells(z, 10).Interior.Color = RGB(255, 0, 0)
+End If
+Next z
+
+'code function for calculating greatest percent increase
+Dim pmax As Long
+Dim maxloc As Long
+pmax = Cells(2, 11).Value
+maxloc = 2
+For z = 2 To rowcount2
+If Cells(z + 1, 11).Value > pmax Then
+pmax = Cells(z + 1, 11).Value
+maxloc = z + 1
+Else
+pmax = pmax
+maxloc = maxloc
+End If
+Range("P2").Value = Cells(maxloc, 9)
+Range("Q2").Value = pmax
+Next z
+
+'code function for calculating greatest percent decrease
+Dim pmin As Long
+Dim minloc As Long
+pmin = Cells(2, 11).Value
+minloc = 2
+For z = 2 To rowcount2
+If Cells(z + 1, 11).Value < pmin Then
+pmin = Cells(z + 1, 11).Value
+minloc = z + 1
+Else
+pmin = pmin
+minloc = minloc
+End If
+Range("P3").Value = Cells(minloc, 9)
+Range("Q3").Value = pmin
+Next z
+
+'code function for calculating greatest total volume
+Dim tmax As Double
+Dim tloc As Long
+Dim f As Long
+tmax = Cells(2, 12).Value
+tloc = 2
+For f = 2 To rowcount2
+If Cells(f + 1, 12).Value > tmax Then
+tmax = Cells(f + 1, 12).Value
+tloc = f + 1
+Else
+tmax = tmax
+tloc = tloc
+End If
+Range("P4").Value = Cells(tloc, 9)
+Range("Q4").Value = tmax
+Next f
+'for the next worksheet
+    Next ws
+End Sub
+
+
